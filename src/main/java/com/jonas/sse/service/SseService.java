@@ -23,8 +23,18 @@ public class SseService {
 
     public void addEmitter(Long clientId, SseEmitter emitter) {
         emitterMap.put(clientId, emitter);
-        emitter.onCompletion(() -> emitterMap.remove(clientId));
-        emitter.onTimeout(() -> emitterMap.remove(clientId));
+        emitter.onCompletion(() -> {
+            emitterMap.remove(clientId);
+            log.info("emitter completion, clientId=" + clientId);
+        });
+        emitter.onTimeout(() -> {
+            emitterMap.remove(clientId);
+            log.error("emitter timeout, clientId=" + clientId);
+        });
+        emitter.onError(e -> {
+            emitterMap.remove(clientId);
+            log.error("emitter error, clientId=" + clientId, e);
+        });
     }
 
     public void push(Long clientId, String content) {
