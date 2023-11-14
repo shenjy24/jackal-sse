@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -30,7 +31,7 @@ public class SseService {
         SseEmitter sseEmitter = emitterMap.get(clientId);
         if (null != sseEmitter) {
             try {
-                sseEmitter.send(content);
+                sseEmitter.send(new SseContent(content, new Timestamp(System.currentTimeMillis())));
             } catch (IOException e) {
                 log.error("send error", e);
             }
